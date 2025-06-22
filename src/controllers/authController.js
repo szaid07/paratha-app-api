@@ -5,10 +5,10 @@ const Business = require("../models/Business");
 const DeliveryPartner = require("../models/DeliveryPartner");
 
 // @route   POST api/auth/signup
-// @desc    Register a user (customer)
+// @desc    Register a user
 // @access  Public
 exports.signup = async (req, res) => {
-  const { name, email, password, phone } = req.body;
+  const { name, email, password, phone, role = "customer" } = req.body;
 
   try {
     let user = await User.findOne({ email });
@@ -22,7 +22,7 @@ exports.signup = async (req, res) => {
       email,
       password,
       phone,
-      role: "customer",
+      role,
     });
 
     const salt = await bcrypt.genSalt(10);
@@ -37,24 +37,19 @@ exports.signup = async (req, res) => {
       },
     };
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: 3600 },
-      (err, token) => {
-        if (err) throw err;
-        res.json({
-          token,
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            role: user.role,
-          },
-        });
-      }
-    );
+    jwt.sign(payload, process.env.JWT_SECRET, {}, (err, token) => {
+      if (err) throw err;
+      res.json({
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+        },
+      });
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
@@ -87,24 +82,19 @@ exports.login = async (req, res) => {
       },
     };
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: 3600 },
-      (err, token) => {
-        if (err) throw err;
-        res.json({
-          token,
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            role: user.role,
-          },
-        });
-      }
-    );
+    jwt.sign(payload, process.env.JWT_SECRET, {}, (err, token) => {
+      if (err) throw err;
+      res.json({
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+        },
+      });
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
@@ -155,24 +145,19 @@ exports.businessSignup = async (req, res) => {
       },
     };
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: 3600 },
-      (err, token) => {
-        if (err) throw err;
-        res.json({
-          token,
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            role: user.role,
-          },
-        });
-      }
-    );
+    jwt.sign(payload, process.env.JWT_SECRET, {}, (err, token) => {
+      if (err) throw err;
+      res.json({
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+        },
+      });
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
@@ -220,24 +205,19 @@ exports.deliveryPartnerSignup = async (req, res) => {
       },
     };
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: 3600 },
-      (err, token) => {
-        if (err) throw err;
-        res.json({
-          token,
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            role: user.role,
-          },
-        });
-      }
-    );
+    jwt.sign(payload, process.env.JWT_SECRET, {}, (err, token) => {
+      if (err) throw err;
+      res.json({
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+        },
+      });
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
@@ -277,26 +257,34 @@ exports.adminSignup = async (req, res) => {
       },
     };
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: 3600 },
-      (err, token) => {
-        if (err) throw err;
-        res.json({
-          token,
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            role: user.role,
-          },
-        });
-      }
-    );
+    jwt.sign(payload, process.env.JWT_SECRET, {}, (err, token) => {
+      if (err) throw err;
+      res.json({
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+        },
+      });
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
+  }
+};
+
+// @route   GET api/auth
+// @desc    Get logged in user
+// @access  Private
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
   }
 };
