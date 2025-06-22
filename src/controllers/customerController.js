@@ -1,18 +1,4 @@
-const Product = require("../models/Product");
 const Order = require("../models/Order");
-
-// @route   GET api/menu
-// @desc    Get all products (menu)
-// @access  Public
-exports.getMenu = async (req, res) => {
-  try {
-    const menu = await Product.find().populate("business", ["name", "address"]);
-    res.json(menu);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
-  }
-};
 
 // @route   POST api/orders
 // @desc    Place a new order

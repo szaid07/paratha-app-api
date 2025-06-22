@@ -1,43 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const {
-  getMenu,
   placeOrder,
   getOrderHistory,
   trackOrder,
 } = require("../controllers/customerController");
 const auth = require("../middlewares/auth");
-
-/**
- * @swagger
- * /api/menu:
- *   get:
- *     summary: Get all available menu items
- *     tags: [Customer]
- *     parameters:
- *       - in: query
- *         name: category
- *         schema:
- *           type: string
- *         description: Filter by category
- *       - in: query
- *         name: businessId
- *         schema:
- *           type: string
- *         description: Filter by business ID
- *     responses:
- *       200:
- *         description: Menu items retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/MenuItem'
- *       500:
- *         description: Server error
- */
-router.get("/menu", getMenu);
 
 /**
  * @swagger
