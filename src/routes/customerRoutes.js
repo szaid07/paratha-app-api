@@ -5,9 +5,6 @@ const {
   placeOrder,
   getOrderHistory,
   trackOrder,
-  addAddress,
-  getAddresses,
-  deleteAddress,
 } = require("../controllers/customerController");
 const auth = require("../middlewares/auth");
 
@@ -137,86 +134,5 @@ router.get("/orders/history", auth, getOrderHistory);
  *         description: Server error
  */
 router.get("/orders/:orderId/track", auth, trackOrder);
-
-/**
- * @swagger
- * /api/addresses:
- *   post:
- *     summary: Add a new delivery address
- *     tags: [Customer]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Address'
- *     responses:
- *       201:
- *         description: Address added successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Address'
- *       400:
- *         description: Invalid address data
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Server error
- */
-router.post("/addresses", auth, addAddress);
-
-/**
- * @swagger
- * /api/addresses:
- *   get:
- *     summary: Get all customer addresses
- *     tags: [Customer]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Addresses retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Address'
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Server error
- */
-router.get("/addresses", auth, getAddresses);
-
-/**
- * @swagger
- * /api/addresses/{addressId}:
- *   delete:
- *     summary: Delete a delivery address
- *     tags: [Customer]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: addressId
- *         required: true
- *         schema:
- *           type: string
- *         description: Address ID
- *     responses:
- *       200:
- *         description: Address deleted successfully
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Address not found
- *       500:
- *         description: Server error
- */
-router.delete("/addresses/:addressId", auth, deleteAddress);
 
 module.exports = router;

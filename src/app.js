@@ -10,6 +10,7 @@ const businessRoutes = require("./routes/businessRoutes");
 const deliveryRoutes = require("./routes/deliveryRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const userRoutes = require("./routes/userRoutes");
+const addressRoutes = require("./routes/addressRoutes");
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.get("/health", (req, res) =>
 // Define Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/addresses", addressRoutes);
 app.use("/api", customerRoutes);
 app.use("/api/business", businessRoutes);
 app.use("/api/delivery", deliveryRoutes);
