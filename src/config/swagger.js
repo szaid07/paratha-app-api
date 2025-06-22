@@ -18,8 +18,14 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
-        description: "Development server",
+        url:
+          process.env.NODE_ENV === "production"
+            ? "https://paratha-app-3c86d136e58d.herokuapp.com"
+            : "http://localhost:3000",
+        description:
+          process.env.NODE_ENV === "production"
+            ? "Production server"
+            : "Development server",
       },
     ],
     components: {

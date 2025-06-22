@@ -22,7 +22,21 @@ app.use(express.json({ extended: false }));
 // Swagger Documentation
 app.use("/api-docs", swaggerConfig.serve, swaggerConfig.setup);
 
-app.get("/", (req, res) => res.send("API Running"));
+app.get("/", (req, res) =>
+  res.json({
+    message: "Paratha App API is running",
+    version: "1.0.0",
+    docs: "/api-docs",
+  })
+);
+
+app.get("/health", (req, res) =>
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development",
+  })
+);
 
 // Define Routes
 app.use("/api/auth", authRoutes);
