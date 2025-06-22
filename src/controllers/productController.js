@@ -18,6 +18,8 @@ exports.getAllProducts = async (req, res) => {
       isVegetarian,
       isVegan,
       isSpicy,
+      minCalories,
+      maxCalories,
       sortBy = "createdAt",
       sortOrder = "desc",
     } = req.query;
@@ -38,6 +40,13 @@ exports.getAllProducts = async (req, res) => {
       filter.price = {};
       if (minPrice) filter.price.$gte = parseFloat(minPrice);
       if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+
+    // Calories range filter
+    if (minCalories || maxCalories) {
+      filter.calories = {};
+      if (minCalories) filter.calories.$gte = parseFloat(minCalories);
+      if (maxCalories) filter.calories.$lte = parseFloat(maxCalories);
     }
 
     // Text search
@@ -172,6 +181,12 @@ exports.addProduct = async (req, res) => {
     isAvailable,
     preparationTime,
     calories,
+    protein,
+    carbohydrates,
+    fat,
+    fiber,
+    sugar,
+    sodium,
     allergens,
     ingredients,
     isVegetarian,
@@ -209,7 +224,13 @@ exports.addProduct = async (req, res) => {
       imageUrl,
       isAvailable: isAvailable !== undefined ? isAvailable : true,
       preparationTime: preparationTime || 15,
-      calories,
+      calories: calories ? parseFloat(calories) : undefined,
+      protein: protein ? parseFloat(protein) : undefined,
+      carbohydrates: carbohydrates ? parseFloat(carbohydrates) : undefined,
+      fat: fat ? parseFloat(fat) : undefined,
+      fiber: fiber ? parseFloat(fiber) : undefined,
+      sugar: sugar ? parseFloat(sugar) : undefined,
+      sodium: sodium ? parseFloat(sodium) : undefined,
       allergens: allergens || [],
       ingredients: ingredients || [],
       isVegetarian: isVegetarian || false,
@@ -250,6 +271,12 @@ exports.updateProduct = async (req, res) => {
     isAvailable,
     preparationTime,
     calories,
+    protein,
+    carbohydrates,
+    fat,
+    fiber,
+    sugar,
+    sodium,
     allergens,
     ingredients,
     isVegetarian,
@@ -293,7 +320,21 @@ exports.updateProduct = async (req, res) => {
     if (isAvailable !== undefined) updateFields.isAvailable = isAvailable;
     if (preparationTime !== undefined)
       updateFields.preparationTime = preparationTime;
-    if (calories !== undefined) updateFields.calories = calories;
+    if (calories !== undefined)
+      updateFields.calories = calories ? parseFloat(calories) : undefined;
+    if (protein !== undefined)
+      updateFields.protein = protein ? parseFloat(protein) : undefined;
+    if (carbohydrates !== undefined)
+      updateFields.carbohydrates = carbohydrates
+        ? parseFloat(carbohydrates)
+        : undefined;
+    if (fat !== undefined) updateFields.fat = fat ? parseFloat(fat) : undefined;
+    if (fiber !== undefined)
+      updateFields.fiber = fiber ? parseFloat(fiber) : undefined;
+    if (sugar !== undefined)
+      updateFields.sugar = sugar ? parseFloat(sugar) : undefined;
+    if (sodium !== undefined)
+      updateFields.sodium = sodium ? parseFloat(sodium) : undefined;
     if (allergens !== undefined) updateFields.allergens = allergens;
     if (ingredients !== undefined) updateFields.ingredients = ingredients;
     if (isVegetarian !== undefined) updateFields.isVegetarian = isVegetarian;

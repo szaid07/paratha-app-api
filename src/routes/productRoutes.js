@@ -53,7 +53,32 @@ const auth = require("../middlewares/auth");
  *           description: Preparation time in minutes
  *         calories:
  *           type: number
- *           description: Calorie content
+ *           minimum: 0
+ *           description: Calories per serving
+ *         protein:
+ *           type: number
+ *           minimum: 0
+ *           description: Protein content in grams
+ *         carbohydrates:
+ *           type: number
+ *           minimum: 0
+ *           description: Carbohydrate content in grams
+ *         fat:
+ *           type: number
+ *           minimum: 0
+ *           description: Fat content in grams
+ *         fiber:
+ *           type: number
+ *           minimum: 0
+ *           description: Fiber content in grams
+ *         sugar:
+ *           type: number
+ *           minimum: 0
+ *           description: Sugar content in grams
+ *         sodium:
+ *           type: number
+ *           minimum: 0
+ *           description: Sodium content in milligrams
  *         allergens:
  *           type: array
  *           items:
@@ -82,6 +107,58 @@ const auth = require("../middlewares/auth");
  *           maximum: 5
  *           default: 0
  *           description: Spice level (0-5)
+ *         averageRating:
+ *           type: number
+ *           minimum: 0
+ *           maximum: 5
+ *           default: 0
+ *           description: Average rating
+ *         totalRatings:
+ *           type: number
+ *           default: 0
+ *           description: Total number of ratings
+ *         ratingDistribution:
+ *           type: object
+ *           properties:
+ *             1:
+ *               type: number
+ *               default: 0
+ *             2:
+ *               type: number
+ *               default: 0
+ *             3:
+ *               type: number
+ *               default: 0
+ *             4:
+ *               type: number
+ *               default: 0
+ *             5:
+ *               type: number
+ *               default: 0
+ *           description: Distribution of ratings
+ *         business:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *             name:
+ *               type: string
+ *             address:
+ *               type: string
+ *             phone:
+ *               type: string
+ *             cuisine:
+ *               type: string
+ *             openingHours:
+ *               type: object
+ *             profileImage:
+ *               type: string
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
  *     BusinessInfo:
  *       type: object
  *       properties:
@@ -252,10 +329,20 @@ const auth = require("../middlewares/auth");
  *           type: boolean
  *         description: Filter spicy products
  *       - in: query
+ *         name: minCalories
+ *         schema:
+ *           type: number
+ *         description: Minimum calories filter
+ *       - in: query
+ *         name: maxCalories
+ *         schema:
+ *           type: number
+ *         description: Maximum calories filter
+ *       - in: query
  *         name: sortBy
  *         schema:
  *           type: string
- *           enum: [name, price, rating, createdAt]
+ *           enum: [createdAt, price, averageRating, calories]
  *           default: createdAt
  *         description: Sort field
  *       - in: query
@@ -271,7 +358,25 @@ const auth = require("../middlewares/auth");
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ProductList'
+ *               type: object
+ *               properties:
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     currentPage:
+ *                       type: number
+ *                     totalPages:
+ *                       type: number
+ *                     totalProducts:
+ *                       type: number
+ *                     hasNextPage:
+ *                       type: boolean
+ *                     hasPrevPage:
+ *                       type: boolean
  *       500:
  *         description: Server error
  */
@@ -325,7 +430,7 @@ router.get("/categories", getCategories);
  *         schema:
  *           type: number
  *           default: 10
- *         description: Maximum number of results
+ *         description: Number of results
  *     responses:
  *       200:
  *         description: Search results
@@ -337,13 +442,13 @@ router.get("/categories", getCategories);
  *                 products:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/ProductResponse'
+ *                     $ref: '#/components/schemas/Product'
  *                 total:
  *                   type: number
  *                 query:
  *                   type: string
  *       400:
- *         description: Search query required
+ *         description: Search query is required
  *       500:
  *         description: Server error
  */
@@ -376,7 +481,7 @@ router.get("/search", searchProducts);
  *         name: sortBy
  *         schema:
  *           type: string
- *           enum: [name, price, rating, createdAt]
+ *           enum: [name, price, averageRating, createdAt]
  *           default: name
  *         description: Sort field
  *       - in: query
@@ -388,7 +493,7 @@ router.get("/search", searchProducts);
  *         description: Sort order
  *     responses:
  *       200:
- *         description: Business products retrieved successfully
+ *         description: Products retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -397,7 +502,7 @@ router.get("/search", searchProducts);
  *                 products:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/ProductResponse'
+ *                     $ref: '#/components/schemas/Product'
  *                 total:
  *                   type: number
  *       500:
@@ -424,7 +529,7 @@ router.get("/business/:businessId", getProductsByBusiness);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ProductResponse'
+ *               $ref: '#/components/schemas/Product'
  *       404:
  *         description: Product not found
  *       500:
@@ -446,7 +551,75 @@ router.get("/:id", getProductById);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Product'
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - price
+ *               - category
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *                 minimum: 0
+ *               category:
+ *                 type: string
+ *               subcategory:
+ *                 type: string
+ *               imageUrl:
+ *                 type: string
+ *               isAvailable:
+ *                 type: boolean
+ *                 default: true
+ *               preparationTime:
+ *                 type: number
+ *                 default: 15
+ *               calories:
+ *                 type: number
+ *                 minimum: 0
+ *               protein:
+ *                 type: number
+ *                 minimum: 0
+ *               carbohydrates:
+ *                 type: number
+ *                 minimum: 0
+ *               fat:
+ *                 type: number
+ *                 minimum: 0
+ *               fiber:
+ *                 type: number
+ *                 minimum: 0
+ *               sugar:
+ *                 type: number
+ *                 minimum: 0
+ *               sodium:
+ *                 type: number
+ *                 minimum: 0
+ *               allergens:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               ingredients:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               isVegetarian:
+ *                 type: boolean
+ *                 default: false
+ *               isVegan:
+ *                 type: boolean
+ *                 default: false
+ *               isSpicy:
+ *                 type: boolean
+ *                 default: false
+ *               spiceLevel:
+ *                 type: number
+ *                 minimum: 0
+ *                 maximum: 5
+ *                 default: 0
  *     responses:
  *       201:
  *         description: Product added successfully
@@ -459,13 +632,13 @@ router.get("/:id", getProductById);
  *                   type: string
  *                   example: "Product added successfully"
  *                 product:
- *                   $ref: '#/components/schemas/ProductResponse'
+ *                   $ref: '#/components/schemas/Product'
  *       400:
- *         description: Invalid input data
+ *         description: Missing required fields
  *       401:
  *         description: Unauthorized
  *       403:
- *         description: Forbidden - Business role required
+ *         description: Only businesses can add products
  *       404:
  *         description: Business profile not found
  *       500:
@@ -494,7 +667,64 @@ router.post("/", auth, addProduct);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Product'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *                 minimum: 0
+ *               category:
+ *                 type: string
+ *               subcategory:
+ *                 type: string
+ *               imageUrl:
+ *                 type: string
+ *               isAvailable:
+ *                 type: boolean
+ *               preparationTime:
+ *                 type: number
+ *               calories:
+ *                 type: number
+ *                 minimum: 0
+ *               protein:
+ *                 type: number
+ *                 minimum: 0
+ *               carbohydrates:
+ *                 type: number
+ *                 minimum: 0
+ *               fat:
+ *                 type: number
+ *                 minimum: 0
+ *               fiber:
+ *                 type: number
+ *                 minimum: 0
+ *               sugar:
+ *                 type: number
+ *                 minimum: 0
+ *               sodium:
+ *                 type: number
+ *                 minimum: 0
+ *               allergens:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               ingredients:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               isVegetarian:
+ *                 type: boolean
+ *               isVegan:
+ *                 type: boolean
+ *               isSpicy:
+ *                 type: boolean
+ *               spiceLevel:
+ *                 type: number
+ *                 minimum: 0
+ *                 maximum: 5
  *     responses:
  *       200:
  *         description: Product updated successfully
@@ -507,15 +737,13 @@ router.post("/", auth, addProduct);
  *                   type: string
  *                   example: "Product updated successfully"
  *                 product:
- *                   $ref: '#/components/schemas/ProductResponse'
- *       400:
- *         description: Invalid input data
+ *                   $ref: '#/components/schemas/Product'
  *       401:
  *         description: Unauthorized
  *       403:
- *         description: Forbidden - Business role required
+ *         description: Only businesses can update products
  *       404:
- *         description: Product or business profile not found
+ *         description: Product not found
  *       500:
  *         description: Server error
  */
@@ -539,7 +767,7 @@ router.put("/:id", auth, updateProduct);
  *         description: Product ID
  *     responses:
  *       200:
- *         description: Product deleted successfully
+ *         description: Product removed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -551,9 +779,9 @@ router.put("/:id", auth, updateProduct);
  *       401:
  *         description: Unauthorized
  *       403:
- *         description: Forbidden - Business role required
+ *         description: Only businesses can delete products
  *       404:
- *         description: Product or business profile not found
+ *         description: Product not found
  *       500:
  *         description: Server error
  */
