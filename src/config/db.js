@@ -8,10 +8,12 @@ const uri =
 const connectDB = async () => {
   try {
     await mongoose.connect(uri);
-    console.log("MongoDB connected");
+    console.log("MongoDB connected successfully");
   } catch (err) {
-    console.error(err.message);
-    process.exit(1);
+    console.error("MongoDB connection error:", err.message);
+    console.log("App will continue without database connection");
+    // Don't exit the process, let the app run without DB
+    // process.exit(1);
   }
 };
 
