@@ -1,0 +1,36 @@
+{
+  "name": "food-delivery-api",
+  "version": "1.0.0",
+  "description": "A comprehensive REST API for food delivery services with complete Swagger documentation",
+  "main": "src/index.js",
+  "engines": {
+    "node": "18.x"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "swagger": "node src/index.js & sleep 2 && open http://localhost:3000/api-docs",
+    "debug": "node debug-api.js",
+    "create-admin": "node create-admin.js",
+    "admin-login": "node admin-login.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.16.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
