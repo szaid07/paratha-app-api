@@ -18,6 +18,11 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  gender: {
+    type: String,
+    enum: ["male", "female", "other", "prefer_not_to_say"],
+    default: "prefer_not_to_say",
+  },
   role: {
     type: String,
     enum: ["customer", "business", "delivery", "admin"],
