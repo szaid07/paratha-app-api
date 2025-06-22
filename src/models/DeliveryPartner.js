@@ -4,6 +4,7 @@ const DeliveryPartnerSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: true,
   },
   phone: {
     type: String,
@@ -13,9 +14,16 @@ const DeliveryPartnerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  availability: {
+  licenseNumber: {
+    type: String,
+    required: false,
+    trim: true,
+    uppercase: true,
+    description: "Driving license number of the delivery partner",
+  },
+  isAvailable: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   currentLocation: {
     type: {
@@ -24,9 +32,14 @@ const DeliveryPartnerSchema = new mongoose.Schema({
     },
     coordinates: {
       type: [Number],
-      index: "2dsphere",
     },
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
+
+DeliveryPartnerSchema.index({ currentLocation: "2dsphere" });
 
 module.exports = mongoose.model("DeliveryPartner", DeliveryPartnerSchema);

@@ -3,12 +3,13 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Business = require("../models/Business");
 const DeliveryPartner = require("../models/DeliveryPartner");
+const Address = require("../models/Address");
 
 // @route   POST api/auth/signup
 // @desc    Register a user
 // @access  Public
 exports.signup = async (req, res) => {
-  const { name, email, password, phone, role = "customer" } = req.body;
+  const { name, email, password, phone, address, role = "customer" } = req.body;
 
   try {
     let user = await User.findOne({ email });
@@ -29,6 +30,17 @@ exports.signup = async (req, res) => {
     user.password = await bcrypt.hash(password, salt);
 
     await user.save();
+
+    // Create and save the address if provided
+    if (address) {
+      const newAddress = new Address({
+        user: user.id,
+        address,
+      });
+      await newAddress.save();
+      user.addresses.push(newAddress.id);
+      await user.save();
+    }
 
     const payload = {
       user: {
@@ -105,7 +117,7 @@ exports.login = async (req, res) => {
 // @desc    Register a business
 // @access  Public
 exports.businessSignup = async (req, res) => {
-  const { name, email, password, businessName, address, phone, cuisine } =
+  const { businessName, email, password, phone, address, gstNumber, cuisine } =
     req.body;
 
   try {
@@ -116,7 +128,7 @@ exports.businessSignup = async (req, res) => {
     }
 
     user = new User({
-      name,
+      name: businessName, // Use business name as user name
       email,
       password,
       phone,
@@ -133,6 +145,7 @@ exports.businessSignup = async (req, res) => {
       name: businessName,
       address,
       phone,
+      gstNumber,
       cuisine,
     });
 
@@ -168,7 +181,8 @@ exports.businessSignup = async (req, res) => {
 // @desc    Register a delivery partner
 // @access  Public
 exports.deliveryPartnerSignup = async (req, res) => {
-  const { name, email, password, phone, vehicle } = req.body;
+  const { name, email, password, phone, vehicle, licenseNumber, address } =
+    req.body;
 
   try {
     let user = await User.findOne({ email });
@@ -190,10 +204,22 @@ exports.deliveryPartnerSignup = async (req, res) => {
 
     await user.save();
 
+    // Create and save the address if provided
+    if (address) {
+      const newAddress = new Address({
+        user: user.id,
+        address,
+      });
+      await newAddress.save();
+      user.addresses.push(newAddress.id);
+      await user.save();
+    }
+
     const deliveryPartner = new DeliveryPartner({
       user: user.id,
       phone,
       vehicle,
+      licenseNumber,
     });
 
     await deliveryPartner.save();
