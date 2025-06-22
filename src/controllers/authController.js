@@ -140,6 +140,18 @@ exports.businessSignup = async (req, res) => {
 
     await user.save();
 
+    // Create and save the business address, and link it to the user
+    if (address) {
+      const newAddress = new Address({
+        user: user.id,
+        address,
+        isBusinessAddress: true,
+      });
+      await newAddress.save();
+      user.addresses.push(newAddress.id);
+      await user.save();
+    }
+
     const business = new Business({
       user: user.id,
       name: businessName,

@@ -45,6 +45,11 @@ const AddressSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isBusinessAddress: {
+    type: Boolean,
+    default: false,
+    description: "Flag to indicate if this is a primary business address",
+  },
   createdAt: {
     type: Date,
     default: Date.now,
