@@ -23,6 +23,12 @@ const UserSchema = new mongoose.Schema({
     enum: ["male", "female", "other", "prefer_not_to_say"],
     default: "prefer_not_to_say",
   },
+  addresses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Address",
+    },
+  ],
   role: {
     type: String,
     enum: ["customer", "business", "delivery", "admin"],
