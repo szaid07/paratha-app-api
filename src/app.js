@@ -13,7 +13,6 @@ const userRoutes = require("./routes/userRoutes");
 const addressRoutes = require("./routes/addressRoutes");
 const productRoutes = require("./routes/productRoutes");
 const productRatingRoutes = require("./routes/productRatingRoutes");
-const orderRoutes = require("./routes/orderRoutes");
 
 const app = express();
 
@@ -53,6 +52,5 @@ app.use("/api", customerRoutes);
 app.use("/api/business", businessRoutes);
 app.use("/api/delivery", deliveryRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/orders", orderRoutes);
 
 module.exports = app;
