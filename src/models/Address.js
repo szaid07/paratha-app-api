@@ -14,32 +14,32 @@ const AddressSchema = new mongoose.Schema({
   },
   street: {
     type: String,
-    required: true,
+    required: false,
   },
   city: {
     type: String,
-    required: true,
+    required: false,
   },
   state: {
     type: String,
-    required: true,
+    required: false,
   },
   zip: {
     type: String,
-    required: true,
+    required: false,
   },
   country: {
     type: String,
-    required: true,
+    required: false,
     default: "USA",
   },
   latitude: {
     type: Number,
-    required: true,
+    required: false,
   },
   longitude: {
     type: Number,
-    required: true,
+    required: false,
   },
   isDefault: {
     type: Boolean,

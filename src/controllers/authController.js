@@ -117,9 +117,8 @@ exports.login = async (req, res) => {
 // @desc    Register a business
 // @access  Public
 exports.businessSignup = async (req, res) => {
-  const { businessName, email, password, phone, address, gstNumber, cuisine } =
+  const { name, email, password, phone, address, gstNumber, cuisine } =
     req.body;
-
   try {
     let user = await User.findOne({ email });
 
@@ -128,7 +127,7 @@ exports.businessSignup = async (req, res) => {
     }
 
     user = new User({
-      name: businessName, // Use business name as user name
+      name: name, // Use business name as user name
       email,
       password,
       phone,
@@ -148,13 +147,16 @@ exports.businessSignup = async (req, res) => {
         isBusinessAddress: true,
       });
       await newAddress.save();
+      if (!Array.isArray(user.addresses)) {
+        user.addresses = [];
+      }
       user.addresses.push(newAddress.id);
       await user.save();
     }
 
     const business = new Business({
       user: user.id,
-      name: businessName,
+      name: name,
       address,
       phone,
       gstNumber,
@@ -184,7 +186,7 @@ exports.businessSignup = async (req, res) => {
       });
     });
   } catch (err) {
-    console.error(err.message);
+    console.error(err);
     res.status(500).send("Server error");
   }
 };
@@ -193,7 +195,7 @@ exports.businessSignup = async (req, res) => {
 // @desc    Register a delivery partner
 // @access  Public
 exports.deliveryPartnerSignup = async (req, res) => {
-  const { name, email, password, phone, vehicle, licenseNumber, address } =
+  const { name, email, password, phone, vehicleType, licenseNumber, address } =
     req.body;
 
   try {
@@ -223,6 +225,9 @@ exports.deliveryPartnerSignup = async (req, res) => {
         address,
       });
       await newAddress.save();
+      if (!Array.isArray(user.addresses)) {
+        user.addresses = [];
+      }
       user.addresses.push(newAddress.id);
       await user.save();
     }
@@ -230,7 +235,7 @@ exports.deliveryPartnerSignup = async (req, res) => {
     const deliveryPartner = new DeliveryPartner({
       user: user.id,
       phone,
-      vehicle,
+      vehicle: vehicleType,
       licenseNumber,
     });
 

@@ -10,6 +10,7 @@
       "env": {
         "NODE_ENV": "development"
       },
+      "runtimeArgs": ["--nolazy"],
       "skipFiles": ["<node_internals>/**"],
       "console": "integratedTerminal"
     }
