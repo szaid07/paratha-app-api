@@ -3,6 +3,7 @@
 
 # Environment variables
 .env
+sample.env
 
 # Logs
 logs
